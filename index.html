@@ -1,0 +1,259 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>洛河宇宙 - 数字化工业矩阵</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        .product-card { transition: all 0.3s ease; }
+        .search-blur { backdrop-filter: blur(12px); background: rgba(255, 255, 255, 0.9); }
+        .category-active .icon-box { background-color: #3b82f6; color: white; }
+        .category-active span { color: #1e293b; font-weight: 900; }
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-card { animation: fadeInScale 0.4s ease-out forwards; }
+        .highlight { color: #3b82f6; font-weight: bold; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <header class="sticky top-0 z-50 bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4 py-3">
+            <div class="flex items-center justify-between gap-4 mb-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black text-xl">L</div>
+                    <h1 class="text-xl font-black tracking-tighter italic">洛河<span class="text-blue-600">宇宙</span></h1>
+                </div>
+                <div class="flex gap-4">
+                    <button class="text-slate-400"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v1m6 0H9"></path></svg></button>
+                </div>
+            </div>
+            
+            <div class="relative group" id="search-container">
+                <input type="text" id="search-input" placeholder="搜索产品、店铺、公司..." 
+                    class="w-full h-12 pl-12 pr-4 bg-slate-100 border border-transparent rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all">
+                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <div id="search-suggestions" class="hidden absolute top-full left-0 right-0 mt-2 search-blur border border-slate-200 rounded-2xl shadow-xl z-[60] overflow-hidden">
+                    <div class="p-2" id="suggestion-list">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-6 pb-24">
+        <section class="mb-8 overflow-x-auto">
+            <div class="grid grid-cols-5 gap-2 min-w-[340px]" id="category-nav">
+                <div onclick="switchCategory('all', this)" class="category-card flex flex-col items-center gap-2 cursor-pointer category-active">
+                    <div class="icon-box w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-500">所有</span>
+                </div>
+                <div onclick="switchCategory('equipment', this)" class="category-card flex flex-col items-center gap-2 cursor-pointer">
+                    <div class="icon-box w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-500">工业设备</span>
+                </div>
+                <div onclick="switchCategory('core', this)" class="category-card flex flex-col items-center gap-2 cursor-pointer">
+                    <div class="icon-box w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-500">核心芯材</span>
+                </div>
+                <div onclick="switchCategory('profile', this)" class="category-card flex flex-col items-center gap-2 cursor-pointer">
+                    <div class="icon-box w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 19h16M4 5h16M4 12h16"></path></svg>
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-500">高端型材</span>
+                </div>
+                <div onclick="switchCategory('parts', this)" class="category-card flex flex-col items-center gap-2 cursor-pointer">
+                    <div class="icon-box w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 011-1h1a2 2 0 100-4H7a1 1 0 01-1-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg>
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-500">精细零件</span>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="flex items-center justify-between mb-4">
+                <h2 id="list-title" class="font-black text-slate-800 text-lg">推荐</h2>
+                <div id="search-tag" class="hidden px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold rounded">搜索结果</div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4" id="product-display"></div>
+
+            <div id="empty-state" class="hidden flex flex-col items-center justify-center py-20 text-slate-300">
+                <svg class="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                <p class="text-sm font-bold">暂无相关资源</p>
+                <p class="text-[10px] mt-1 opacity-60">请尝试更换搜索关键词</p>
+            </div>
+        </section>
+    </main>
+
+    <nav class="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-xl border-t px-6 py-3 flex justify-between items-center z-50">
+        <div class="flex flex-col items-center gap-1 text-blue-600">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
+            <span class="text-[9px] font-black uppercase">Cosmos</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 text-slate-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+            <span class="text-[9px] font-bold">分类</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 text-slate-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+            <span class="text-[9px] font-bold">采购</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 text-slate-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            <span class="text-[9px] font-bold">我的</span>
+        </div>
+    </nav>
+
+    <script>
+        // 模拟商品/公司数据库
+        const DB = [
+            { id: 1, type: 'equipment', name: '诺德工业级热风循环风箱', shop: '诺德工业官方旗舰店', company: '诺德数字化工业公司', price: 8500, sales: '1.2w+', img: 'Nuode.jpg' },
+            { id: 2, type: 'core', name: '高强度蜂窝复合芯材', shop: '材料宇宙官方店', company: '洛河新材料实验室', price: 420, sales: '800+', img: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400' },
+            { id: 3, type: 'parts', name: '高精数控机床主轴零件', shop: '精工制造', company: '洛河精工', price: 1200, sales: '3k+', img: 'https://images.unsplash.com/photo-1537462715879-360eeb61a0ad?w=400' },
+            { id: 4, type: 'profile', name: '航空级铝镁合金型材', shop: '中铝工业联营店', company: '中国铝业数字化中心', price: 2100, sales: '1.5k+', img: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400' }
+        ];
+
+        const searchInput = document.getElementById('search-input');
+        const suggestionsPanel = document.getElementById('search-suggestions');
+        const suggestionList = document.getElementById('suggestion-list');
+        const display = document.getElementById('product-display');
+        const empty = document.getElementById('empty-state');
+
+        // 生成卡片HTML
+        function createCard(item) {
+            return `
+                <a href="detail.html" class="product-card animate-card bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm">
+                    <div class="aspect-square bg-slate-100 relative">
+                        <img src="${item.img}" class="w-full h-full object-cover">
+                        <div class="absolute top-2 left-2 bg-blue-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded shadow-lg">3D ACTIVE</div>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-bold text-slate-800 text-xs line-clamp-1">${item.name}</h3>
+                        <p class="text-[10px] text-slate-400 mt-1">${item.shop}</p>
+                        <div class="mt-3 flex justify-between items-center">
+                            <span class="text-blue-600 font-black text-sm">¥ ${item.price.toLocaleString()}</span>
+                            <span class="text-[9px] text-slate-300">${item.sales}</span>
+                        </div>
+                    </div>
+                </a>`;
+        }
+
+        // 搜索逻辑
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value.trim().toLowerCase();
+            if (!val) {
+                suggestionsPanel.classList.add('hidden');
+                return;
+            }
+
+            const matches = DB.filter(item => 
+                item.name.toLowerCase().includes(val) || 
+                item.shop.toLowerCase().includes(val) || 
+                item.company.toLowerCase().includes(val)
+            );
+
+            if (matches.length > 0) {
+                suggestionList.innerHTML = matches.map(item => `
+                    <div onclick="executeSearch('${item.name}')" class="flex items-center gap-3 p-3 hover:bg-blue-50 cursor-pointer rounded-xl transition-colors group">
+                        <div class="w-8 h-8 bg-slate-100 rounded-lg flex-shrink-0 flex items-center justify-center group-hover:bg-white transition-colors">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-xs text-slate-800">${item.name.replace(new RegExp(val, 'gi'), m => `<span class="highlight">${m}</span>`)}</div>
+                            <div class="text-[9px] text-slate-400">${item.shop} | ${item.company}</div>
+                        </div>
+                        <div class="text-[10px] text-slate-300 font-mono italic">工业矩阵</div>
+                    </div>
+                `).join('');
+                suggestionsPanel.classList.remove('hidden');
+            } else {
+                suggestionList.innerHTML = `<div class="p-4 text-center text-xs text-slate-400">未找到相关工业资源</div>`;
+                suggestionsPanel.classList.remove('hidden');
+            }
+        });
+
+        // 执行搜索结果显示
+        function executeSearch(keyword) {
+            searchInput.value = keyword;
+            suggestionsPanel.classList.add('hidden');
+            
+            // 切换分类为“所有”，并改变视觉状态
+            document.querySelectorAll('.category-card').forEach(el => el.classList.remove('category-active'));
+            document.querySelector('[onclick*="all"]').classList.add('category-active');
+
+            const val = keyword.toLowerCase();
+            // 排序逻辑：完全匹配名称的在前，包含的在后
+            const results = DB.filter(item => 
+                item.name.toLowerCase().includes(val) || 
+                item.shop.toLowerCase().includes(val) || 
+                item.company.toLowerCase().includes(val)
+            ).sort((a, b) => {
+                const aName = a.name.toLowerCase();
+                const bName = b.name.toLowerCase();
+                if (aName === val) return -1;
+                if (bName === val) return 1;
+                return aName.indexOf(val) - bName.indexOf(val);
+            });
+
+            renderDisplay(results);
+            document.getElementById('list-title').innerText = `"${keyword}" 的结果`;
+            document.getElementById('search-tag').classList.remove('hidden');
+        }
+
+        function renderDisplay(items) {
+            if (items.length > 0) {
+                display.innerHTML = items.map(i => createCard(i)).join('');
+                display.classList.remove('hidden');
+                empty.classList.add('hidden');
+            } else {
+                display.innerHTML = '';
+                display.classList.add('hidden');
+                empty.classList.remove('hidden');
+            }
+        }
+
+        function switchCategory(type, element) {
+            document.querySelectorAll('.category-card').forEach(el => el.classList.remove('category-active'));
+            element.classList.add('category-active');
+            document.getElementById('search-tag').classList.add('hidden');
+            document.getElementById('list-title').innerText = "推荐";
+            searchInput.value = "";
+
+            if (type === 'all') {
+                renderDisplay(DB);
+            } else {
+                const filtered = DB.filter(i => i.type === type);
+                renderDisplay(filtered);
+            }
+        }
+
+        // 回车搜索
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') executeSearch(searchInput.value);
+        });
+
+        // 点击外部关闭搜索建议
+        document.addEventListener('click', (e) => {
+            if (!document.getElementById('search-container').contains(e.target)) {
+                suggestionsPanel.classList.add('hidden');
+            }
+        });
+
+        window.onload = () => renderDisplay(DB);
+    </script>
+</body>
+</html>
