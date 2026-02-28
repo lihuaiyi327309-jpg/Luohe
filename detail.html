@@ -20,12 +20,35 @@
         
         /* 2. 介绍卡片 */
         .label { 
-            display: none; background: rgba(255,255,255,0.98); border-radius: 10px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15); width: 220px; 
-            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); 
-            z-index: 1000; overflow: hidden; border: 1px solid rgba(0,0,0,0.05);
-            backdrop-filter: blur(10px); pointer-events: auto;
+            display: none; 
+            background: rgba(255,255,255,0.98); 
+            border-radius: 10px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15); 
+            width: 220px; 
+            position: absolute; 
+            bottom: 55px;          
+            left: 50%;             
+            margin-left: 20px;     
+            z-index: 1000; 
+            overflow: visible;
+            border: 1px solid rgba(0,0,0,0.05);
+            backdrop-filter: blur(10px); 
+            pointer-events: auto;
         }
+        
+        .label::before {
+            content: "";
+            position: absolute;
+            width: 1.5px;
+            height: 60px; 
+            background: linear-gradient(to bottom, #3b82f6, rgba(59, 130, 246, 0.05));
+            bottom: -56px;        
+            left: 0px;            
+            transform: rotate(22deg); 
+            transform-origin: top center;
+            pointer-events: none;
+        }
+
         .label-header { background: #1e293b; color: white; padding: 8px 12px; font-weight: bold; font-size: 12px; display: flex; justify-content: space-between; }
         .label-body { padding: 12px; color: #64748b; font-size: 11px; line-height: 1.6; }
         .show-info .label { display: block; }
@@ -44,20 +67,20 @@
             font-size: 10px; font-weight: bold; color: #1e293b; transition: all 0.3s;
         }
 
+        .part-btn.selected {
+            background: #3b82f6 !important;
+            color: white !important;
+            border-color: #60a5fa !important;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            transform: scale(1.08);
+        }
+
         .selected-action {
             background: #1D1D1D !important;
             color: white !important;
             border-color: #333 !important;
             box-shadow: 0 8px 20px rgba(0,0,0,0.2) !important;
             transform: scale(1.02);
-        }
-
-        .part-btn.selected {
-            background: #3b82f6 !important;
-            color: white !important;
-            border-color: #60a5fa;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-            transform: scale(1.08);
         }
 
         @keyframes popScale { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -68,8 +91,9 @@
         .color-item.selected { border-color: #1D1D1D; transform: scale(1.2); }
         .sticky-buy-bar { box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 1001; }
 
-        .product-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .product-card:active { transform: scale(0.96); opacity: 0.8; }
+        /* 猜你喜欢样式修正 */
+        .recommend-card { transition: all 0.3s ease; }
+        .recommend-card:active { transform: scale(0.97); }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 overflow-x-hidden">
@@ -95,19 +119,19 @@
             exposure="1.2"
             class="w-full h-full outline-none">
             
-            <button class="dot" id="dot-1" slot="hotspot-1" data-position="-0.3865m 2.8974m 0.4935m" data-normal="0m 1m 0m">
+            <button class="dot" id="dot-1" slot="hotspot-1" data-position="-0.3865m 2.8974m 0.4935m" data-normal="0m 1m 0m" onclick="triggerHotspot('dot-1')">
                 <div class="label" onclick="event.stopPropagation()">
                     <div class="label-header"><span>鼓风电机</span><span class="opacity-50 text-[9px]">PART 01</span></div>
                     <div class="label-body">核心动力部件，专为工业高温环境设计，支持 24/7 不间断运行。</div>
                 </div>
             </button>
-            <button class="dot" id="dot-2" slot="hotspot-2" data-position="-1.8439m 1.9867m 0.2101m" data-normal="0m 1m 0m">
+            <button class="dot" id="dot-2" slot="hotspot-2" data-position="-1.8439m 1.9867m 0.2101m" data-normal="0m 1m 0m" onclick="triggerHotspot('dot-2')">
                 <div class="label" onclick="event.stopPropagation()">
                     <div class="label-header"><span>加热组件</span><span class="opacity-50 text-[9px]">PART 02</span></div>
                     <div class="label-body">304不锈钢U型阵列排布，升温均匀，热效率提升35%。</div>
                 </div>
             </button>
-            <button class="dot" id="dot-3" slot="hotspot-3" data-position="-2.2856m 1.4417m 1.0262m" data-normal="0m 0m 1m">
+            <button class="dot" id="dot-3" slot="hotspot-3" data-position="-2.2856m 1.4417m 1.0262m" data-normal="0m 0m 1m" onclick="triggerHotspot('dot-3')">
                 <div class="label" onclick="event.stopPropagation()">
                     <div class="label-header"><span>操作面板</span><span class="opacity-50 text-[9px]">PART 03</span></div>
                     <div class="label-body">PID 智能控温系统，支持多段工艺曲线编程。</div>
@@ -115,9 +139,9 @@
             </button>
 
             <div id="parts-panel">
-                <button onclick="triggerHotspot('dot-1')" class="part-btn shadow-sm">电机</button>
-                <button onclick="triggerHotspot('dot-2')" class="part-btn shadow-sm">加热</button>
-                <button onclick="triggerHotspot('dot-3')" class="part-btn shadow-sm">面板</button>
+                <button id="btn-dot-1" onclick="triggerHotspot('dot-1')" class="part-btn shadow-sm">电机</button>
+                <button id="btn-dot-2" onclick="triggerHotspot('dot-2')" class="part-btn shadow-sm">加热</button>
+                <button id="btn-dot-3" onclick="triggerHotspot('dot-3')" class="part-btn shadow-sm">面板</button>
             </div>
 
             <div class="absolute bottom-12 left-12 right-12 flex flex-col pointer-events-none">
@@ -125,6 +149,8 @@
                     <div onclick="changeColor('#303030FF', this)" class="color-item selected" style="background: #303030;"></div>
                     <div onclick="changeColor('#384764FF', this)" class="color-item" style="background: #384764;"></div>
                     <div onclick="changeColor('#C3C1B9FF', this)" class="color-item" style="background: #C3C1B9;"></div>
+                    <div onclick="changeColor('#A52A2AFF', this)" class="color-item" style="background: #A52A2A;"></div>
+                    <div onclick="changeColor('#2E8B57FF', this)" class="color-item" style="background: #2E8B57;"></div>
                 </div>
 
                 <div class="flex gap-3 pointer-events-auto">
@@ -153,18 +179,59 @@
     </section>
 
     <section class="p-6 bg-slate-50 pb-32">
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-lg font-black text-slate-800 relative inline-block">猜你喜欢<span class="absolute -bottom-1 left-0 w-8 h-1 bg-blue-600 rounded-full"></span></h2>
+        <div class="flex items-center gap-3 mb-6">
+            <div class="h-[1px] flex-1 bg-slate-200"></div>
+            <h2 class="text-xs font-bold text-slate-400 tracking-widest uppercase">猜你喜欢</h2>
+            <div class="h-[1px] flex-1 bg-slate-200"></div>
         </div>
-
+        
         <div class="grid grid-cols-2 gap-4">
-            <div class="product-card bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col">
-                <div class="aspect-square bg-slate-50 rounded-xl mb-3 overflow-hidden">
-                    <img src="product1.jpg" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=300&q=80'">
+            <div class="recommend-card bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
+                <div class="aspect-square bg-slate-100 p-4">
+                    <img src="NuodeYULAN.png" class="w-full h-full object-contain" alt="产品">
                 </div>
-                <h3 class="text-xs font-bold text-slate-700 line-clamp-1 mb-1">诺德 X1 高温强化烘箱</h3>
-                <div class="mt-auto flex justify-between items-center">
-                    <span class="text-blue-600 font-black text-sm">¥ 12,800</span>
+                <div class="p-3">
+                    <h3 class="text-[11px] font-bold text-slate-700 line-clamp-2 h-8">立式工业恒温干燥箱 (250L)</h3>
+                    <div class="mt-2 flex items-baseline gap-1">
+                        <span class="text-[10px] text-blue-600 font-bold">¥</span>
+                        <span class="text-sm text-blue-600 font-black">4,200</span>
+                    </div>
+                </div>
+            </div>
+            <div class="recommend-card bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
+                <div class="aspect-square bg-slate-100 p-4">
+                    <img src="NuodeYULAN.png" class="w-full h-full object-contain" alt="产品">
+                </div>
+                <div class="p-3">
+                    <h3 class="text-[11px] font-bold text-slate-700 line-clamp-2 h-8">真空脱泡机套装 - 实验室专用</h3>
+                    <div class="mt-2 flex items-baseline gap-1">
+                        <span class="text-[10px] text-blue-600 font-bold">¥</span>
+                        <span class="text-sm text-blue-600 font-black">2,880</span>
+                    </div>
+                </div>
+            </div>
+            <div class="recommend-card bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
+                <div class="aspect-square bg-slate-100 p-4">
+                    <img src="NuodeYULAN.png" class="w-full h-full object-contain" alt="产品">
+                </div>
+                <div class="p-3">
+                    <h3 class="text-[11px] font-bold text-slate-700 line-clamp-2 h-8">台式程控箱式电炉 (1200℃)</h3>
+                    <div class="mt-2 flex items-baseline gap-1">
+                        <span class="text-[10px] text-blue-600 font-bold">¥</span>
+                        <span class="text-sm text-blue-600 font-black">6,500</span>
+                    </div>
+                </div>
+            </div>
+            <div class="recommend-card bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
+                <div class="aspect-square bg-slate-100 p-4">
+                    <img src="NuodeYULAN.png" class="w-full h-full object-contain" alt="产品">
+                </div>
+                <div class="p-3">
+                    <h3 class="text-[11px] font-bold text-slate-700 line-clamp-2 h-8">超低温冷冻储存箱 -40℃</h3>
+                    <div class="mt-2 flex items-baseline gap-1">
+                        <span class="text-[10px] text-blue-600 font-bold">¥</span>
+                        <span class="text-sm text-blue-600 font-black">12,600</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -225,15 +292,19 @@
 
         function triggerHotspot(id) {
             const dot = document.getElementById(id);
+            const sideBtn = document.getElementById('btn-' + id);
             const isOpen = dot.classList.contains('show-info');
             document.querySelectorAll('.dot').forEach(el => el.classList.remove('show-info'));
+            document.querySelectorAll('.part-btn').forEach(btn => btn.classList.remove('selected'));
             if (!isOpen) {
                 dot.classList.add('show-info');
+                if (sideBtn) sideBtn.classList.add('selected');
             }
         }
 
         function resetSelection() {
             document.querySelectorAll('.dot').forEach(el => el.classList.remove('show-info'));
+            document.querySelectorAll('.part-btn').forEach(btn => btn.classList.remove('selected'));
         }
 
         function handleControl() {
@@ -243,7 +314,6 @@
             }
             matMenu.classList.remove('active');
             colorToggleBtn.classList.remove('selected-action');
-
             if (currentStatus === "IDLE" || currentStatus === "COLLAPSING") {
                 currentStatus = "EXPLODING";
                 explodeText.innerText = "进度...";
